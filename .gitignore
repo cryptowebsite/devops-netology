@@ -1,4 +1,4 @@
 .idea
-tasks
 .venv
 requirements.txt
+.vagrant
