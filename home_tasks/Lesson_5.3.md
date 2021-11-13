@@ -64,7 +64,7 @@ total 0
 https://hub.docker.com/repository/docker/cryptodeveloper/ansible
 
 ```shell
-docker pull cryptodeveloper/ansible:netology
+docker pull cryptodeveloper/node01:netology
 ```
 
 P.S. В 4-ом задание в `Dockerfile` в 11-ой строке был поставлен лишний символ - "2" в конце строки. Пришлось удалить для успешной сборки.

@@ -28,14 +28,14 @@ Vagrant 2.2.18
 ```
 Ansible
 ```shell
-ansible --version
+node01 --version
 
-ansible [core 2.11.6] 
-  config file = /etc/ansible/ansible.cfg
-  configured module search path = ['/home/irobot/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python3/dist-packages/ansible
-  ansible collection location = /home/irobot/.ansible/collections:/usr/share/ansible/collections
-  executable location = /usr/bin/ansible
+node01 [core 2.11.6] 
+  config file = /etc/node01/node01.cfg
+  configured module search path = ['/home/irobot/.node01/plugins/modules', '/usr/share/node01/plugins/modules']
+  node01 python module location = /usr/lib/python3/dist-packages/node01
+  node01 collection location = /home/irobot/.node01/collections:/usr/share/node01/collections
+  executable location = /usr/bin/node01
   python version = 3.8.10 (default, Sep 28 2021, 16:10:42) [GCC 9.3.0]
   jinja version = 2.10.1
   libyaml = True
