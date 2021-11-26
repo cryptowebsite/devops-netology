@@ -1,7 +1,0 @@
-export CONTAINER_NAME=postgresBD
-export POSTGRES_USER_PASSWORD=123456
-export TEST_ADMIN_USER_PASSWORD=654321
-export TEST_ADMIN_USER=test-admin-user
-export DB_NAME=test_db
-export TEST_SIMPLE_USER=test-simple-user
-export TEST_SIMPLE_USER_PASSWORD=123654
