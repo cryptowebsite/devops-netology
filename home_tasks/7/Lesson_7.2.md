@@ -26,8 +26,16 @@ provider "yandex" {
 
 # 2 Создать ВМ
 ## 2.1 AWS
-
+```shell
+export AWS_ACCESS_KEY_ID=<MY_AWS_ACCESS_KEY_ID>
+export AWS_SECRET_ACCESS_KEY=<MY_AWS_SECRET_ACCESS_KEY>
+export AWS_DEFAULT_REGION=<MY_AWS_REGION>
+```
+https://github.com/cryptowebsite/devops-netology/tree/main/aws-terraform
 ## 2.2 YC
-
+```shell
+export YC_TOKEN=<MY_YC_TOKEN>
+```
+https://github.com/cryptowebsite/devops-netology/tree/main/yandex-cloud-terraform
 
 Образ `ami` можно создать с помощью `packer`.
