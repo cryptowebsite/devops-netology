@@ -4,3 +4,7 @@ requirements.txt
 vagrant/.vagrant
 work-dir
 work-dir2
+aws-terraform/.terraform
+aws-terraform/.terraform.lock.hcl
+yandex-cloud-terraform/.terraform
+yandex-cloud-terraform/.terraform.lock.hcl
