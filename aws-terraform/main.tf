@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "ap-southeast-1"
-}
-
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners = ["099720109477"]
@@ -17,14 +13,61 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-data "aws_caller_identity" "current" {}
+locals {
+  vm_cores = {
+    stage = 2
+    prod = 2
+  }
+  vm_instance_type = {
+    stage = "t2.micro"
+    prod = "t2.large"
+  }
+  vm_instance_count = {
+    stage = 1
+    prod = 2
+  }
+  vm_names = {
+    stage = ["vm1-stage"]
+    prod = ["vm1-prod", "vm2-prod"]
+  }
+}
 
-data "aws_region" "current" {}
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
 
-resource "aws_instance" "vm" {
+  name = terraform.workspace
+  cidr = "10.0.0.0/16"
+
+  azs             = [var.aws_region]
+  private_subnets = ["10.0.1.0/24"]
+  public_subnets  = ["10.0.101.0/24"]
+
+  enable_nat_gateway = true
+  enable_vpn_gateway = true
+
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
+}
+
+module "vm1" {
+  source = "./modules/instance"
+  instance_count = local.vm_instance_count[terraform.workspace]
+  instance_type = local.vm_instance_type[terraform.workspace]
+  image         = data.aws_ami.ubuntu.id
+  name          = "vm1"
+  description   = "VM1"
+  cores         = local.vm_cores[terraform.workspace]
+    depends_on = [
+    module.vpc
+  ]
+}
+
+resource "aws_instance" "vm2" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
-  cpu_core_count = 1
+  instance_type = local.vm_instance_type[terraform.workspace]
+  cpu_core_count = local.vm_cores[terraform.workspace]
   ebs_optimized = true
   hibernation = true
   monitoring = true
@@ -32,8 +75,10 @@ resource "aws_instance" "vm" {
   disable_api_termination = false
   instance_initiated_shutdown_behavior = "stop"
 
+  for_each = toset( local.vm_names[terraform.workspace] )
+
   tags = {
-    Name = "Netology_VM"
+    Name = each.key
   }
 
   metadata_options {
@@ -42,12 +87,6 @@ resource "aws_instance" "vm" {
     http_tokens = "required"
   }
 
-  network_interface {
-    network_interface_id = aws_network_interface.vm_interface.id
-    device_index         = 0
-  }
-
-
   lifecycle {
     create_before_destroy = true
   }
@@ -55,35 +94,4 @@ resource "aws_instance" "vm" {
   credit_specification {
     cpu_credits = "standard"
   }
-}
-
-resource "aws_vpc" "vm_vpc" {
-  cidr_block = "172.16.0.0/16"
-
-  tags = {
-    Name = "vm_network"
-  }
-}
-
-resource "aws_subnet" "vm_subnet" {
-  vpc_id            = aws_vpc.vm_vpc.id
-  cidr_block        = "172.16.10.0/24"
-  availability_zone = "ap-southeast-1a"
-
-  tags = {
-    Name = "vm-subnet"
-  }
-}
-
-resource "aws_network_interface" "vm_interface" {
-  subnet_id   = aws_subnet.vm_subnet.id
-  private_ips = ["172.16.10.100"]
-
-  tags = {
-    Name = "primary_network_interface"
-  }
-}
-
-resource "aws_eip" "vm_ip" {
-  instance = aws_instance.vm.id
 }
