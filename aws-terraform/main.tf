@@ -59,39 +59,20 @@ module "vm1" {
   name          = "vm1"
   description   = "VM1"
   cores         = local.vm_cores[terraform.workspace]
-    depends_on = [
+  depends_on = [
     module.vpc
   ]
 }
 
-resource "aws_instance" "vm2" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = local.vm_instance_type[terraform.workspace]
-  cpu_core_count = local.vm_cores[terraform.workspace]
-  ebs_optimized = true
-  hibernation = true
-  monitoring = true
-  cpu_threads_per_core = 2
-  disable_api_termination = false
-  instance_initiated_shutdown_behavior = "stop"
+module "vm2" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 3.0"
+  for_each = toset(local.vm_names[terraform.workspace])
+  name = "instance-${each.key}"
 
-  for_each = toset( local.vm_names[terraform.workspace] )
-
-  tags = {
-    Name = each.key
-  }
-
-  metadata_options {
-    http_endpoint = "enabled"
-    http_put_response_hop_limit = 32
-    http_tokens = "required"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  credit_specification {
-    cpu_credits = "standard"
-  }
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = local.vm_instance_type[terraform.workspace]
+  key_name               = "user1"
+  monitoring             = true
 }
+
