@@ -1,10 +1,6 @@
-# Lesson 9.3
+# Lesson 9.6
 
-## `SonarQube`
-[![sonar](https://i.postimg.cc/xjwMLx7C/sonar.png)](https://postimg.cc/c6cvSmdy)
+[gitlab репозиторий](https://gitlab.com/cryptowebdeveloper/netology)
 
-## `Nexus`
-[maven-metadata.xml](https://github.com/cryptowebsite/devops-netology/blob/main/maven-metadata.xml)
-
-## `Maven`
-[pom.xml](https://github.com/cryptowebsite/devops-netology/blob/main/pom.xml)
+P.S. В связи с последними политическими событиями, политика `GitLab`по отношению к Россиянам сильно изменилась, например при регистрации, в раскрывающемся списке отсутствует страна `Россия`, а возле `Украины` стоит пометка - `За исключением крымского региона`. К чему это я всё. При попытке запустить сборку появилось не приятное сообщение с ошибкой, о невозможности запуска `runner` на их северах, неподтвержденным аккаунтам. По понятным причинам подтвердить свой аккаунт с помощью банковской карты я не смогу. `Gitlab` Любездно предложил развернуть `runner` на своих мощностях по инструкции https://docs.gitlab.com/runner/install/. Но к сожалению даная инструкция не является актуальной т.к. некоторые флаги команд, предлагаемые в этой инструкции отсутствуют. В связи со всеми выше изложенными фактами, тратить время на запуск столь не дружественного продукта, не подминаются руки =).
+[![card-Error.png](https://i.postimg.cc/KzzjCfqf/card-Error.png)](https://postimg.cc/4KDX96TH)
