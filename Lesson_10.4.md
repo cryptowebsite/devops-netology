@@ -1,0 +1,37 @@
+# Lesson 10.4
+
+## 1. Поднять `elasticsearch`, `logstash`, `kibana`, и `filebeat`
+
+### 1.1 Подготовка
+```shell
+# увеличиваем максимальный объём виртуальной памяти
+sudo sysctl -w vm.max_map_count=262144
+# меняем права на filebeat.yml
+sudo chmod go-w configs/filebeat.yml
+sudo chown 0:0 configs/filebeat.yml
+```
+
+Создаём `kibana.yml`
+```yaml
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: ["http://es-hot:9200"]
+```
+
+А также добавляем в `docker-compose.yml` в сервис `logstash` сеть `elastic` и в сервис `kibana` волум с ранее созданным конфигом (`- ./configs/kibana.yml:/usr/share/kibana/config/kibana.yml:ro`). Еще необходимо исправить подключения двух конфигурационных файлов в сервис `logstash` - `- ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro` и `- ./configs/logstash.yml:/usr/share/logstash/config/logstash.yml:ro`.
+
+[![docker.png](https://i.postimg.cc/gJtJjqJV/docker.png)](https://postimg.cc/WFrjfZ0z)
+
+[![kibanba.png](https://i.postimg.cc/3J2kgKcj/kibanba.png)](https://postimg.cc/QHxNDrsV)
+
+
+## 2. Создайте несколько `index-patterns`
+
+
+
+
+docker logs logstash > logstash.log
+
+curl 'localhost:9200/_cat/indices?v'
+
+sudo chmod 777 configs/filebeat.yml
