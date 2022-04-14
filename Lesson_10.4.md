@@ -18,6 +18,8 @@ server.host: "0"
 elasticsearch.hosts: ["http://es-hot:9200"]
 ```
 
+Следующие шаги можно пропустить, если ипользовать файлы конфигурации и `docker-compose.yml` из новой ветки `elk-hw`.
+
 А также добавляем в `docker-compose.yml` в сервис `logstash` сеть `elastic` и в сервис `kibana` волум с ранее созданным конфигом (`- ./configs/kibana.yml:/usr/share/kibana/config/kibana.yml:ro`). Еще необходимо исправить подключения двух конфигурационных файлов в сервис `logstash` - `- ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro` и `- ./configs/logstash.yml:/usr/share/logstash/config/logstash.yml:ro`.
 
 [![docker.png](https://i.postimg.cc/gJtJjqJV/docker.png)](https://postimg.cc/WFrjfZ0z)
@@ -27,11 +29,8 @@ elasticsearch.hosts: ["http://es-hot:9200"]
 
 ## 2. Создайте несколько `index-patterns`
 
+[![index.png](https://i.postimg.cc/sgBRJHfH/index.png)](https://postimg.cc/v4djYzV5)
 
+[![search.png](https://i.postimg.cc/qqTpgs8B/search.png)](https://postimg.cc/S2DBvzTH)
 
-
-docker logs logstash > logstash.log
-
-curl 'localhost:9200/_cat/indices?v'
-
-sudo chmod 777 configs/filebeat.yml
+P.S. Даже после устранения всех ошибок, передать логи через `logstash` не получилось, только напрямую `filebeat->elasticsearch`. 
