@@ -1,0 +1,22 @@
+---
+- name: Update system packages
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Upgrade system packages
+  become: true
+  apt:
+    upgrade: dist
+
+- name: Install docker.io
+  become: true
+  apt:
+    name: docker.io
+    state: present
+
+- name: Install conntrack
+  become: true
+  apt:
+    name: conntrack
+    state: present

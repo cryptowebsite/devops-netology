@@ -1,0 +1,40 @@
+---
+- name: Make files directory
+  delegate_to: localhost
+  run_once: true
+  file:
+    path: ./files
+    state: directory
+
+- name: Get a latest kubectl version
+  delegate_to: localhost
+  run_once: true
+  register: kubectl_version
+  changed_when: kubectl_version.rc != 0
+  command: curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt
+
+- name: Check for the existence of a kubectl binaries file
+  run_once: true
+  delegate_to: localhost
+  stat:
+    path: files/kubectl
+  register: check_kubectl_binaries
+  changed_when: check_kubectl_binaries.failed != false
+
+- name: Download kubectl binaries
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{kubectl_version.stdout}}/bin/linux/amd64/kubectl"
+    dest: files/kubectl
+    mode: '0755'
+  when: check_kubectl_binaries.stat.exists == false
+
+- name: Copy kubectl binaries
+  become: true
+  ansible.builtin.copy:
+    src: files/kubectl
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: '0755'

@@ -1,0 +1,20 @@
+---
+- name: Download go binaries
+  become: true
+  get_url:
+    url: "https://go.dev/dl/go{{go_version}}.linux-amd64.tar.gz"
+    dest: "/tmp/go{{go_version}}.linux-amd64.tar.gz"
+    mode: 0755
+
+- name: Extract go binaries
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/go{{go_version}}.linux-amd64.tar.gz"
+    dest:  /usr/local
+
+- name: Delete go archive
+  become: true
+  file:
+    state: absent
+    path: "/tmp/go{{go_version}}.linux-amd64.tar.gz"
+

@@ -1,0 +1,12 @@
+---
+- name: Fix protect
+  become: true
+  command: sysctl fs.protected_regular=0
+  register: fix_protect
+  changed_when: fix_protect.rc != 0
+
+- name: Run minikube
+  become: true
+  command: minikube start --vm-driver=none
+  register: run_minikube
+  changed_when: run_minikube.rc != 0

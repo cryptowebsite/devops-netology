@@ -1,0 +1,26 @@
+---
+- name: Check for the existence of a minikube binaries file
+  run_once: true
+  delegate_to: localhost
+  stat:
+    path: files/minikube
+  register: check_minikube_binaries
+  changed_when: check_minikube_binaries.failed != false
+
+- name: Download minikube binaries
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+    dest: files/minikube
+    mode: '0755'
+  when: check_minikube_binaries.stat.exists == false
+
+- name: Copy minikube binaries
+  become: true
+  ansible.builtin.copy:
+    src: minikube
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: '0755'

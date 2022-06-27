@@ -1,0 +1,22 @@
+---
+- name: Create deployment hello-node
+  become: true
+  command: kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4
+  register: deploy_hello_node
+  changed_when: deploy_hello_node.rc != 0
+
+- name: Create service hello-node
+  become: true
+  command: kubectl expose deployment hello-node --type=LoadBalancer --port=8080
+  register: service_hello_node
+  changed_when: service_hello_node.rc != 0
+
+- name: Pause for 1 minutes to create the service
+  ansible.builtin.pause:
+    minutes: 1
+
+- name: Port forward
+  become: true
+  command: "kubectl port-forward deployment/hello-node {{app_port}}:{{app_port}}"
+  register: port_forward_hello_node
+  changed_when: port_forward_hello_node.rc != 0

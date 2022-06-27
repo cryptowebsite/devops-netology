@@ -1,0 +1,15 @@
+---
+- name: Install docker.io
+  become: true
+  apt:
+    name: curl
+    state: present
+
+- name: Check if host is reachable on the port {{app_port}}
+  shell:
+    cmd: "/usr/bin/curl --connect-timeout 10 --silent --show-error {{ hostvars['minikube0'].ansible_host }}:{{app_port}}"
+    warn: no
+    executable: /bin/bash
+  changed_when: check_app.rc != 0
+  register: check_app
+  failed_when: check_app.rc in [28] or res.stderr is search("No route to host")

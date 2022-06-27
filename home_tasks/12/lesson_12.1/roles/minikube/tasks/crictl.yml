@@ -1,0 +1,19 @@
+---
+- name: Download crictl binaries
+  become: true
+  get_url:
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{crictl_version}}/crictl-{{crictl_version}}-linux-amd64.tar.gz"
+    dest: "/tmp/crictl-{{crictl_version}}-linux-amd64.tar.gz"
+    mode: 0755
+
+- name: Extract crictl binaries
+  become: true
+  ansible.builtin.unarchive:
+    src: "/tmp/crictl-{{crictl_version}}-linux-amd64.tar.gz"
+    dest:  /usr/local/bin
+
+- name: Delete crictl archive
+  become: true
+  file:
+    state: absent
+    path: "/tmp/crictl-{{crictl_version}}-linux-amd64.tar.gz"

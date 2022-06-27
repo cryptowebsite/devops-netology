@@ -1,0 +1,9 @@
+---
+all:
+  hosts:
+    minikube0:
+      ansible_host: 10.10.0.2
+
+minikube:
+  hosts:
+    minikube0:

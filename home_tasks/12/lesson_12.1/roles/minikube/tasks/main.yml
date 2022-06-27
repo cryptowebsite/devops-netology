@@ -1,0 +1,7 @@
+---
+- import_tasks: kubectl.yml
+- import_tasks: docker.yml
+- import_tasks: minikube.yml
+- import_tasks: go.yml
+- import_tasks: crictl.yml
+- import_tasks: run.yml

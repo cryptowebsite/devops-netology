@@ -1,0 +1,12 @@
+---
+- name: Install ingress addon
+  become: true
+  command: minikube addons enable ingress
+  register: install_ingress_addon
+  changed_when: install_ingress_addon.rc != 0
+
+- name: Install dashboard addon
+  become: true
+  command: minikube addons enable dashboard
+  register: install_dashboard_addon
+  changed_when: install_dashboard_addon.rc != 0

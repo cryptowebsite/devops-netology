@@ -1,0 +1,12 @@
+---
+- name: Install minikube
+  hosts: minikube
+  gather_facts: yes
+  roles:
+    - ./roles/minikube
+
+- name: Run hello world
+  hosts: minikube
+  gather_facts: yes
+  roles:
+    - ./roles/hello_world
