@@ -2,6 +2,42 @@
 
 ## 1. Установить в кластер CNI плагин Calico
 
+### Default
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-access
+spec:
+  podSelector:
+    matchLabels: {}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+      - protocol: UDP
+        port: 53
+```
+
 ### Frontend
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -14,8 +50,8 @@ spec:
     matchLabels:
       app: frontend
   policyTypes:
+  - Egress
   - Ingress
-#  - Egress
   ingress:
   - from:
       - ipBlock:
@@ -52,7 +88,7 @@ spec:
       app: backend
   policyTypes:
     - Ingress
-#    - Egress
+    - Egress
   ingress:
   - from:
     - podSelector:
@@ -105,39 +141,37 @@ spec:
 
 ### Frontend test
 ```shell
-kubectl exec frontend-c74c5646c-98zhg -- curl -s -m 1 backend
+kubectl exec frontend-c74c5646c-4z6bt -- curl -s -m 1 backend
 
 Praqma Network MultiTool (with NGINX) - backend-869fd89bdc-k7d7w - 10.233.94.3
 ```
 ```shell
-kubectl exec frontend-c74c5646c-98zhg -- curl -s -m 1 cache
+kubectl exec frontend-c74c5646c-4z6bt -- curl -s -m 1 cache
 
 command terminated with exit code 28
 ```
 ### Backend test
 ```shell
-kubectl exec backend-869fd89bdc-k7d7w -- curl -s -m 1 frontend
+kubectl exec backend-869fd89bdc-thv25 -- curl -s -m 1 frontend
 
 command terminated with exit code 28
 ```
 ```shell
-kubectl exec backend-869fd89bdc-k7d7w -- curl -s -m 1 cache
+kubectl exec backend-869fd89bdc-thv25 -- curl -s -m 1 cache
 
 Praqma Network MultiTool (with NGINX) - cache-b7cbd9f8f-kjn6b - 10.233.94.4
 ```
 ### Cache test
 ```shell
-kubectl exec cache-b7cbd9f8f-kjn6b -- curl -s -m 1 frontend
+kubectl exec cache-b7cbd9f8f-z2p4d -- curl -s -m 1 frontend
 
 command terminated with exit code 28
 ```
 ```shell
-kubectl exec cache-b7cbd9f8f-kjn6b -- curl -s -m 1 backend
+kubectl exec cache-b7cbd9f8f-z2p4d -- curl -s -m 1 backend
 
 command terminated with exit code 28
 ```
-
-P.S. Настроить исходящие правила так и не получилось. При добавлении привила `egress` исходящий трафик не идет между подами. Заранее благодарен за указание на ошибку.
 
 ## 2. Изучить, что запущено по умолчанию
 
