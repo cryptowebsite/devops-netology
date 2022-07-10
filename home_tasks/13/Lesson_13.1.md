@@ -98,7 +98,7 @@ spec:
     spec:
       storageClassName: db-class
       accessModes:
-        - ReadWrite
+        - ReadWriteMany
       resources:
         requests:
           storage: "100Gi"
