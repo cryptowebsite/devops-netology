@@ -1,67 +1,152 @@
 # Lesson 13.2
 
-## 1. 
+## 1. Подключить для тестового конфига общую папку
 ```yaml
----
-
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fb-pod
-  labels:
-    app: fb
-spec:
-  type: NodePort
-  ports:
-  - port: 80
-    nodePort: 30080
-  selector:
-    app: fb-pod
-
----
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: db
+  name: my-app
+  labels:
+    app: my-app
 spec:
-  serviceName: db-svc
+  replicas: 1
   selector:
     matchLabels:
-      app: db
-  replicas: 1
+      app: my-app
   template:
     metadata:
       labels:
-        app: db
+        app: my-app
     spec:
       containers:
-        - name: db
-          image: myregistry/k8s-database:05.07.22
-          env:
-            - name: POSTGRES_PASSWORD
-              value: postgres
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_DB
-              value: news    
-                          
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: db
-spec:
-  selector:
-    app: db
-  type: NodePort
-  ports:
-    - port: 5432
-      targetPort: 5432
+      - name: frontend
+        image: cryptodeveloper/netology-frontend:v0.1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: web
+          containerPort: 80
+        volumeMounts:
+        - mountPath: "/static"
+          name: static  
+      - name: backend
+        image: cryptodeveloper/netology-backend:v0.1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: api
+          containerPort: 9000
+        volumeMounts:
+        - mountPath: "/static"
+          name: static   
+      volumes:
+        - name: static
+          emptyDir: {}
+```
+```shell
+kubectl exec my-app-6dff4f7555-7kxxp -c backend -- sh -c "echo '42' > /static/42.txt"
+kubectl exec my-app-6dff4f7555-7kxxp -c frontend -- cat /static/42.txt
+
+42
 ```
 
-## 2. 
+## 2. Подключить общую папку для прода
 ```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: cryptodeveloper/netology-frontend:v0.1.0
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: BASE_URL
+            value: http://localhost:9000
+        ports:
+        - name: web
+          containerPort: 80
+        volumeMounts:
+        - mountPath: "/static"
+          name: static    
+      volumes:
+      - name: static
+        persistentVolumeClaim:
+          claimName: pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: cryptodeveloper/netology-backend:v0.1.0
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: DATABASE_URL
+            value: postgres://postgres:postgres@db:5432/news
+        ports:
+        - name: api
+          containerPort: 9000
+        volumeMounts:
+        - mountPath: "/static"
+          name: static
+      volumes:
+      - name: static
+        persistentVolumeClaim:
+          claimName: pvc          
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc
+spec:
+  storageClassName: "my-app-static"
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv
+spec:
+  storageClassName: "my-app-static"
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /data/pv
+```
+```shell
+kubectl exec backend-7b5c6d8fb-5cctt -c backend -- sh -c "echo '42' > /static/42.txt"
+kubectl exec frontend-5f978bc988-fjnzh -c frontend -- cat /static/42.txt
 
+42
 ```
