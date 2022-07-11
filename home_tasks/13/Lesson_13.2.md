@@ -50,7 +50,6 @@ kubectl exec my-app-6dff4f7555-7kxxp -c frontend -- cat /static/42.txt
 
 ## 2. Подключить общую папку для прода
 ```yaml
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -117,36 +116,23 @@ spec:
       volumes:
       - name: static
         persistentVolumeClaim:
-          claimName: pvc          
+          claimName: pvc
 ---
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
   name: pvc
 spec:
-  storageClassName: "my-app-static"
+  storageClassName: "nfs"
   accessModes:
-    - ReadWriteMany
+  - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv
-spec:
-  storageClassName: "my-app-static"
-  accessModes:
-    - ReadWriteMany
-  capacity:
-    storage: 2Gi
-  hostPath:
-    path: /data/pv
 ```
 ```shell
-kubectl exec backend-7b5c6d8fb-5cctt -c backend -- sh -c "echo '42' > /static/42.txt"
-kubectl exec frontend-5f978bc988-fjnzh -c frontend -- cat /static/42.txt
+kubectl exec backend-7b5c6d8fb-mjttr -c backend -- sh -c "echo '42' > /static/42.txt"
+kubectl exec frontend-5f978bc988-sq45l -c frontend -- cat /static/42.txt
 
 42
 ```
