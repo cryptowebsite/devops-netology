@@ -1,0 +1,17 @@
+replicaCount: 1
+namespace: app1
+portFrontend: 80
+portBackend: 9000
+portDb: 5432
+
+imageFrontend:
+  repository: cryptodeveloper/netology-frontend
+  tag: "v0.1.0"
+
+imageBackend:
+  repository: cryptodeveloper/netology-backend
+  tag: "v0.1.0"
+
+imageDb:
+  repository: postgres
+  tag: "13-alpine"

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-db
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Release.Name }}-db
+spec:
+  serviceName: "db"
+  replicas: 1
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+    type: "RollingUpdate"
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-db
+    spec:
+      containers:
+        - name: db
+          image: "{{ .Values.imageDb.repository }}:{{ .Values.imageDb.tag | default .Chart.AppVersion }}"
+          env:
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: news
+          ports:
+          - containerPort:  {{ .Values.portDb }}
+            name: db
+          imagePullPolicy: "IfNotPresent"
