@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+data:
+  username: YWRtaW4K
+  password: cGFzc3dvcmQK
+kind: Secret
+metadata:
+  name: env-secret
+  namespace: default
+type: Opaque
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: cryptodeveloper/netology-frontend:v0.1.0
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: certs
+          mountPath: "/certs"
+          readOnly: true
+        env:
+          - name: MY_SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: env-secret
+                key: username
+          - name: MY_SECRET_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: env-secret
+                key: password
+      volumes:
+      - name: certs
+        secret:
+          secretName: domain-cert
